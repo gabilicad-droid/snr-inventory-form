@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&R Daily Inventory Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C8102E;
+  --dark: #1A0008;
+  --gold: #F5A623;
+  --bg: #FFF5F6;
+  --white: #ffffff;
+  --border: #F0D0D4;
+  --mid: #9A6070;
+  --text: #2D0010;
+  --light: #FDE8EC;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; padding-bottom: 70px; }
+
+/* TOP HEADER */
+.top-bar {
+  background: var(--dark);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+}
+.top-logo {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 2px;
+}
+.top-logo span { color: #fff; }
+.top-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 300;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, var(--red) 0%, #8B0018 100%);
+  padding: 22px 18px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: 'S&R';
+  position: absolute;
+  right: -10px; top: -10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 100px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.05);
+  line-height: 1;
+}
+.hero-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+}
+.hero-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  letter-spacing: 1px;
+}
+.hero-title span { color: var(--gold); }
+.hero-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+/* PROGRESS */
+.prog-bar-wrap {
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+}
+.prog-bar-fill {
+  height: 100%;
+  background: var(--gold);
+  width: 5%;
+  transition: width 0.4s ease;
+}
+
+/* STORE CARD */
+.card {
+  background: var(--white);
+  margin: 14px 14px 0;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(200,16,46,0.06);
+}
+.card-head {
+  background: var(--dark);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-head-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 1px;
+  background: rgba(245,166,35,0.15);
+  color: var(--gold);
+  padding: 3px 9px;
+  border-radius: 4px;
+}
+
+.field-wrap { padding: 13px 16px; border-bottom: 1px solid var(--border); }
+.field-wrap:last-child { border-bottom: none; }
+.field-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 7px;
+  display: flex; align-items: center; gap: 4px;
+}
+.req { color: var(--red); font-size: 14px; }
+
+select, input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  appearance: none; -webkit-appearance: none;
+  outline: none;
+  transition: all 0.2s;
+}
+select:focus, input:focus {
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(200,16,46,0.08);
+}
+.sel-wrap { position: relative; }
+.sel-wrap::after {
+  content: '▾';
+  position: absolute; right: 13px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--mid); pointer-events: none;
+}
+
+/* CATEGORY HEADER */
+.cat-header {
+  padding: 9px 16px;
+  background: var(--light);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.cat-dot {
+  width: 8px; height: 8px;
+  background: var(--red);
+  border-radius: 50%;
+}
+.cat-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+}
+.cat-count {
+  font-size: 10px;
+  color: var(--mid);
+  margin-left: auto;
+  font-weight: 600;
+}
+
+/* SKU ROW */
+.sku-row {
+  display: flex;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  transition: background 0.15s;
+}
+.sku-row:last-child { border-bottom: none; }
+.sku-row.filled { background: #FFFBF5; }
+
+.sku-info { flex: 1; min-width: 0; }
+.sku-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qty-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.qty-btn {
+  width: 36px; height: 44px;
+  background: none; border: none;
+  font-size: 20px;
+  color: var(--red);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.qty-btn:active { background: var(--red); color: #fff; }
+.qty-num {
+  width: 42px;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  border: none; background: none; outline: none;
+}
+.qty-num.has-val { color: var(--red); }
+.qty-num::-webkit-outer-spin-button,
+.qty-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* SUMMARY */
+.summary {
+  margin: 14px 14px 0;
+  background: var(--dark);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.sum-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(245,166,35,0.7);
+  margin-bottom: 14px;
+}
+.sum-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sum-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 9px;
+  padding: 10px 12px;
+}
+.sum-item-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.sum-item-val {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+.sum-item-val.gold { color: var(--gold); }
+.sum-item-val.warn { color: #FF6B6B; }
+.sum-item-val.ok { color: #4CAF50; }
+
+/* SUBMIT */
+.submit-area { padding: 16px 14px 0; }
+.submit-btn {
+  width: 100%;
+  padding: 17px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(200,16,46,0.35);
+  -webkit-tap-highlight-color: transparent;
+}
+.submit-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+.submit-btn:not(:disabled):active { transform: scale(0.98); background: #8B0018; }
+
+.note {
+  font-size: 11px;
+  color: var(--mid);
+  text-align: center;
+  margin-top: 12px;
+  padding: 0 16px;
+  line-height: 1.6;
+}
+
+/* Success overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.overlay.show { display: flex; }
+.overlay-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px 24px;
+  text-align: center;
+  width: 100%;
+  max-width: 340px;
+}
+.overlay-icon { font-size: 52px; margin-bottom: 12px; }
+.overlay-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.overlay-sub { font-size: 13px; color: var(--mid); line-height: 1.6; }
+.overlay-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-logo">S<span>&</span>R</div>
+  <div class="top-date" id="topDate"></div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Poultry Division · Daily Report</div>
+  <div class="hero-title">Ending <span>Inventory</span><br>Report Form</div>
+  <div class="hero-sub">S&R Members Treatment · All Branches</div>
+</div>
+<div class="prog-bar-wrap"><div class="prog-bar-fill" id="progFill"></div></div>
+
+<!-- Store Info -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-title">Store Information</div>
+    <div class="card-badge">STEP 1</div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label"><span class="req">●</span>&nbsp;S&R Branch</div>
+    <div class="sel-wrap">
+      <select id="storeSelect" onchange="onFieldChange()">
+        <option value="" disabled selected>Select your branch…</option>
+        <optgroup label="NCR">
+          <option>KAREILA MGT CORP. - COMMONWEALTH</option>
+          <option>KAREILA MGT CORP. - CONGRESSIONAL</option>
+          <option>KAREILA MGT CORP. - NEW MANILA QC</option>
+          <option>KAREILA MGT CORP. - MARIKINA</option>
+          <option>KAREILA MGT CORP. - LIBIS</option>
+          <option>KAREILA MGT CORP. - ALABANG</option>
+          <option>KAREILA MGT CORP. - ASEANA</option>
+          <option>KAREILA MGT. CORP. - SUCAT</option>
+          <option>KAREILA MGT. CORP. - SUCAT 222</option>
+          <option>KAREILA MGT CORP. - CIRCUIT MAKATI</option>
+          <option>KAREILA MGT CORP. - SHAW</option>
+          <option>KAREILA MGT CORP. - FORT BONIFACIO</option>
+          <option>KAREILA MGT CORP. - CALASIAO</option>
+        </optgroup>
+        <optgroup label="Central Luzon">
+          <option>KAREILA MGT CORP. - DAU</option>
+          <option>KAREILA MGT CORP. - SAN FERNANDO</option>
+          <option>KAREILA MGT CORP - BALIWAG</option>
+          <option>KAREILA MGT CORP. - CABANATUAN</option>
+          <option>KAREILA MGT CORP. - MALOLOS BULACAN</option>
+          <option>S&R TARLAC</option>
+        </optgroup>
+        <optgroup label="South">
+          <option>S&R GENERAL TRIAS</option>
+          <option>KAREILA MGT CORP. - BACOOR</option>
+          <option>KAREILA MGT CORP. - IMUS</option>
+          <option>KAREILA MGT CORP - KAWIT</option>
+          <option>KAREILA MGT CORP. - NUVALI</option>
+          <option>KAREILA STO. TOMAS</option>
+          <option>KAREILA MGT CORP - LIPA</option>
+          <option>KAREILA MGT CORP. - LUCENA</option>
+        </optgroup>
+      </select>
+    </div>
+  </div>
+  <div class="field-wrap">
+    <div class="field-label"><span class="req">●</span>&nbsp;Merchandiser Name</div>
+    <div class="sel-wrap">
+      <select id="merchSelect" onchange="onFieldChange()">
+        <option value="" disabled selected>Select your name…</option>
+        <option>Juan dela Cruz</option>
+        <option>Maria Santos</option>
+        <option>Rodel Bautista</option>
+        <option>Ana Reyes</option>
+        <option>Carlo Mendoza</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- SKU List -->
+<div class="card" id="skuCard">
+  <div class="card-head">
+    <div class="card-head-title">Ending Inventory</div>
+    <div class="card-badge" id="skuCountBadge">29 SKUs</div>
+  </div>
+  <div id="skuList"></div>
+</div>
+
+<!-- Summary -->
+<div class="summary">
+  <div class="sum-title">📋 Submission Summary</div>
+  <div class="sum-grid">
+    <div class="sum-item">
+      <div class="sum-item-label">SKUs Filled</div>
+      <div class="sum-item-val gold" id="s-filled">0 / 29</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-item-label">Total Pieces</div>
+      <div class="sum-item-val" id="s-total">0</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-item-label">Zero Stock</div>
+      <div class="sum-item-val warn" id="s-zero">29</div>
+    </div>
+    <div class="sum-item">
+      <div class="sum-item-label">Status</div>
+      <div class="sum-item-val" id="s-status" style="font-size:14px; color: rgba(255,255,255,0.3);">Incomplete</div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit -->
+<div class="submit-area">
+  <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">Submit Report →</button>
+</div>
+<div class="note">⚠️ Select correct branch before submitting. Timestamp is recorded automatically.</div>
+
+<!-- Success Overlay -->
+<div class="overlay" id="overlay">
+  <div class="overlay-card">
+    <div class="overlay-icon">✅</div>
+    <div class="overlay-title">Report Submitted!</div>
+    <div class="overlay-sub" id="overlayText">Your ending inventory has been saved to the database.</div>
+    <button class="overlay-btn" onclick="resetForm()">Submit Another Store</button>
+  </div>
+</div>
+
+<script>
+const SKUS = [
+  // Whole Chicken
+  { name: 'Whole Chicken – Premium',     cat: 'Whole Chicken' },
+  { name: 'Whole Chicken – Y&T',         cat: 'Whole Chicken' },
+  { name: 'Whole Chicken – Family Feast',cat: 'Whole Chicken' },
+  { name: 'Whole Chicken – 2in1',        cat: 'Whole Chicken' },
+  { name: 'Whole Chicken – 15in1',       cat: 'Whole Chicken' },
+  { name: 'Whole Chicken – Free Range',  cat: 'Whole Chicken' },
+  // Giblets
+  { name: 'Liver',                        cat: 'Giblets' },
+  { name: 'Gizzard',                      cat: 'Giblets' },
+  // RB Cut Ups
+  { name: 'Adobo Cut',     cat: 'RB Cut Ups' },
+  { name: 'BFSO',          cat: 'RB Cut Ups' },
+  { name: 'Breast',        cat: 'RB Cut Ups' },
+  { name: 'Drumstick',     cat: 'RB Cut Ups' },
+  { name: 'Leg Quarter',   cat: 'RB Cut Ups' },
+  { name: 'Tenders',       cat: 'RB Cut Ups' },
+  { name: 'TFSO',          cat: 'RB Cut Ups' },
+  { name: 'Thigh',         cat: 'RB Cut Ups' },
+  { name: 'Wings',         cat: 'RB Cut Ups' },
+  { name: 'BFSL',          cat: 'RB Cut Ups' },
+  { name: 'TFSL',          cat: 'RB Cut Ups' },
+  // Marinated Cut Ups
+  { name: 'Marinated – Garlic Butter', cat: 'Marinated Cut Ups' },
+  { name: 'Marinated – Spicy',         cat: 'Marinated Cut Ups' },
+  { name: 'Marinated – Smoky BBQ',     cat: 'Marinated Cut Ups' },
+  // Marinated Whole
+  { name: 'Marinated Whole – Smoked Bacon',  cat: 'Marinated Whole' },
+  { name: 'Marinated Whole – Classic Inihaw',cat: 'Marinated Whole' },
+  { name: 'Marinated Whole – Spicy',         cat: 'Marinated Whole' },
+  { name: 'Marinated Whole – Lemon Roast',   cat: 'Marinated Whole' },
+  { name: 'Marinated Whole – Sweet Roast',   cat: 'Marinated Whole' },
+];
+
+const CAT_COLORS = {
+  'Whole Chicken':     '#C8102E',
+  'Giblets':           '#8B4513',
+  'RB Cut Ups':        '#0057A8',
+  'Marinated Cut Ups': '#2E7D52',
+  'Marinated Whole':   '#7B2D8B',
+};
+
+// Render SKUs grouped by category
+function renderSKUs() {
+  const list = document.getElementById('skuList');
+  const cats = [...new Set(SKUS.map(s => s.cat))];
+  let html = '';
+  cats.forEach(cat => {
+    const items = SKUS.filter(s => s.cat === cat);
+    const color = CAT_COLORS[cat] || '#333';
+    html += `<div class="cat-header">
+      <div class="cat-dot" style="background:${color}"></div>
+      <div class="cat-name" style="color:${color}">${cat}</div>
+      <div class="cat-count">${items.length} items</div>
+    </div>`;
+    items.forEach((sku, _) => {
+      const i = SKUS.indexOf(sku);
+      html += `<div class="sku-row" id="row-${i}">
+        <div class="sku-info"><div class="sku-name">${sku.name}</div></div>
+        <div class="qty-wrap">
+          <button class="qty-btn" ontouchstart="" onclick="adj(${i},-1)">−</button>
+          <input class="qty-num" id="qty-${i}" type="number" value="0" min="0" oninput="onQtyInput(${i})">
+          <button class="qty-btn" ontouchstart="" onclick="adj(${i},1)">+</button>
+        </div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+  document.getElementById('skuCountBadge').textContent = SKUS.length + ' SKUs';
+}
+
+function adj(i, d) {
+  const inp = document.getElementById('qty-'+i);
+  let v = Math.max(0, (parseInt(inp.value)||0) + d);
+  inp.value = v;
+  onQtyInput(i);
+}
+
+function onQtyInput(i) {
+  const v = parseInt(document.getElementById('qty-'+i).value)||0;
+  document.getElementById('qty-'+i).classList.toggle('has-val', v>0);
+  document.getElementById('row-'+i).classList.toggle('filled', v>0);
+  updateSummary();
+}
+
+function onFieldChange() { updateSummary(); }
+
+function updateSummary() {
+  let total=0, filled=0, zeros=0;
+  SKUS.forEach((_,i) => {
+    const v = parseInt(document.getElementById('qty-'+i)?.value)||0;
+    total += v; if(v>0) filled++; else zeros++;
+  });
+  document.getElementById('s-filled').textContent = filled+' / '+SKUS.length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-zero').textContent = zeros;
+  document.getElementById('s-zero').className = 'sum-item-val '+(zeros>10?'warn':'ok');
+
+  const store = document.getElementById('storeSelect').value;
+  const merch = document.getElementById('merchSelect').value;
+  const ready = store && merch;
+  const statusEl = document.getElementById('s-status');
+  if(ready && filled === SKUS.length) { statusEl.textContent='✓ Ready'; statusEl.style.color='#4CAF50'; }
+  else if(ready || filled>0) { statusEl.textContent='In Progress'; statusEl.style.color='#F5A623'; }
+  else { statusEl.textContent='Incomplete'; statusEl.style.color='rgba(255,255,255,0.3)'; }
+
+  // Progress bar
+  let pct = 5;
+  if(store) pct += 15;
+  if(merch) pct += 10;
+  pct += Math.round((filled/SKUS.length)*70);
+  document.getElementById('progFill').style.width = pct+'%';
+}
+
+async function handleSubmit() {
+  const store = document.getElementById('storeSelect').value;
+  const merch = document.getElementById('merchSelect').value;
+  if(!store || !merch) { alert('Please select your Branch and Name first.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  // Build rows to send to Google Sheets
+  const timestamp = new Date().toISOString();
+  const date = new Date().toLocaleDateString('en-PH');
+  const rows = SKUS.map((sku, i) => ({
+    timestamp, date, store, merch,
+    sku: sku.name,
+    category: sku.cat,
+    ending: parseInt(document.getElementById('qty-'+i).value)||0
+  }));
+
+  // ── GOOGLE SHEETS SUBMISSION ──────────────────────────────────────
+  // Replace SCRIPT_URL below with your Google Apps Script Web App URL
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyq5Tu395UspEIC-5P2-Lw502YRrIWNUrg3-VZlF_vW7L2fwPvilZDpWE8z0XZC4-s-/exec';
+
+  try {
+    if (SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyq5Tu395UspEIC-5P2-Lw502YRrIWNUrg3-VZlF_vW7L2fwPvilZDpWE8z0XZC4-s-/exec') {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows })
+      });
+    }
+    // Show success
+    document.getElementById('overlayText').innerHTML =
+      `<b>${store}</b><br>Merchandiser: ${merch}<br>${rows.length} SKUs recorded · ${date}`;
+    document.getElementById('overlay').classList.add('show');
+  } catch(e) {
+    alert('Submission failed. Please try again.');
+  }
+
+  btn.textContent = 'Submit Report →';
+  btn.disabled = false;
+}
+
+function resetForm() {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('storeSelect').selectedIndex = 0;
+  document.getElementById('merchSelect').selectedIndex = 0;
+  SKUS.forEach((_,i) => {
+    const inp = document.getElementById('qty-'+i);
+    if(inp) { inp.value=0; inp.classList.remove('has-val'); }
+    const row = document.getElementById('row-'+i);
+    if(row) row.classList.remove('filled');
+  });
+  updateSummary();
+}
+
+// Init
+const d = new Date();
+document.getElementById('topDate').textContent = d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+renderSKUs();
+updateSummary();
+</script>
+</body>
+</html>
